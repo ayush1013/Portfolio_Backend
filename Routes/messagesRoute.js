@@ -5,12 +5,15 @@ const { v4: uuidv4 } = require("uuid");
 
 messagesRouter.get("/messages", async (req, res) => {
   const query = req.query;
+  console.log(query);
   try {
     if (query.name) {
-      const singleMessage = await messagesModel.findOne({ name: query.name });
+      const singleMessage = await messagesModel.find({
+        name: { $regex: query.name, $options: "i" },
+      });
       return res.status(200).send({ data: singleMessage });
     }
-    const allMessage = await messagesModel.findOne(query);
+    const allMessage = await messagesModel.find(query);
     res.status(200).send({ data: allMessage });
   } catch (err) {
     return res.status(403).send({ message: "404 error Url is not working" });
