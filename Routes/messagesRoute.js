@@ -1,12 +1,31 @@
 const express = require("express");
 const messagesRouter = express.Router();
 const messagesModel = require("../Models/MessageModel");
+const { v4: uuidv4 } = require("uuid");
+
+messagesRouter.get("/messages", (req, res) => {
+    
+});
 
 messagesRouter.post("/message", async (req, res) => {
   const { content, email, name } = req.body;
   try {
-    const message = new messagesModel({ email, name, content });
-    await message.save();
+    const existingMessage = await messagesModel.findOne({ email });
+    console.log("existingMessage", existingMessage);
+    if (existingMessage) {
+      existingMessage.content.push({ id: uuidv4(), content });
+      await existingMessage.save();
+      return res
+        .status(200)
+        .send({ message: "Your message has been sent successfully" });
+    } else {
+      const message = new messagesModel({
+        email,
+        name,
+        content: [{ id: uuidv4(), content }],
+      });
+      await message.save();
+    }
     res
       .status(200)
       .send({ message: "Your message has been saved successfully" });
@@ -14,3 +33,5 @@ messagesRouter.post("/message", async (req, res) => {
     return res.status(403).send({ message: "404 error Url is not working" });
   }
 });
+
+module.exports = messagesRouter;

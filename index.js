@@ -3,6 +3,7 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 require("dotenv").config();
+const messagesRouter = require("./Routes/messagesRoute")
 
 app.use(cors());
 app.use(express.json());
@@ -10,6 +11,8 @@ app.use(express.json());
 app.get("/", (req, res) => {
   res.send("Hey, You are on the server");
 });
+
+app.use("/api", messagesRouter);
 
 app.listen(process.env.port, async () => {
   try {
