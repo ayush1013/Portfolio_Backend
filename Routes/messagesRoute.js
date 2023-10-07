@@ -3,8 +3,18 @@ const messagesRouter = express.Router();
 const messagesModel = require("../Models/MessageModel");
 const { v4: uuidv4 } = require("uuid");
 
-messagesRouter.get("/messages", (req, res) => {
-    
+messagesRouter.get("/messages", async (req, res) => {
+  const query = req.query;
+  try {
+    if (query.name) {
+      const singleMessage = await messagesModel.findOne({ name: query.name });
+      return res.status(200).send({ data: singleMessage });
+    }
+    const allMessage = await messagesModel.findOne(query);
+    res.status(200).send({ data: allMessage });
+  } catch (err) {
+    return res.status(403).send({ message: "404 error Url is not working" });
+  }
 });
 
 messagesRouter.post("/message", async (req, res) => {
